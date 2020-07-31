@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -121,7 +122,44 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, '_static')
+
+STATICFILES_FINDERS = [
+
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+
+    'django_plotly_dash.finders.DashAssetFinder',
+    'django_plotly_dash.finders.DashComponentFinder',
+    'django_plotly_dash.finders.DashAppDirectoryFinder',
+]
 
 
 # django-plotly-dash configuration
+
 X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+PLOTLY_COMPONENTS = [
+    # Common components
+    'dash_core_components',
+    'dash_html_components',
+    'dash_renderer',
+
+    # django-plotly-dash components
+    'dpd_components',
+    # static support if serving local assets
+    # 'dpd_static_support',
+
+    # Other components, as needed
+    'dash_bootstrap_components',
+    'dash_table'
+]
+
+# Skip configuration
+
+SKIP_API_KEY = ''
+
+try:
+    from .local_settings import *
+except:
+    pass
