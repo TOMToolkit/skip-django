@@ -157,7 +157,7 @@ PLOTLY_COMPONENTS = [
 
 # Skip configuration
 
-SKIP_API_KEY = ''
+SKIP_API_KEY = os.getenv('SKIP_API_KEY', '')
 
 try:
     from .local_settings import *
