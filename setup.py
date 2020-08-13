@@ -28,10 +28,10 @@ setup(
     use_scm_version=True,
     setup_requires=['setuptools_scm', 'wheel'],
     install_requires=[
-        'django==3.0.7'
-        'django_plotly_dash==1.4.2'
-        'dash-bootstrap-components==0.10.3'
-        'whitenoise==5.1.0'
+        'django==3.0.7',
+        'django_plotly_dash==1.4.2',
+        'dash-bootstrap-components==0.10.3',
+        'whitenoise==5.1.0',
         'dpd-static-support'
     ],
     extras_require={
