@@ -1,16 +1,20 @@
+from datetime import datetime
+
 import dash
-import dash_core_components as dcc
 from dash.dependencies import Input, Output
-import dash_html_components as html
-import dash_table
-# import dash_bootstrap_components as dbc
+from dash_bootstrap_components import Col, Container, Row, themes
+import dash_bootstrap_components as dbc
+import dash_core_components as dcc
+from dash_html_components import Div
+from dash_table import DataTable
 from django_plotly_dash import DjangoDash
+# import dash_table
 
 from .skip_api_client import SkipAPIClient
 
-app = DjangoDash('SkipDash')
+app = DjangoDash('SkipDash', external_stylesheets=[themes.BOOTSTRAP], add_bootstrap_links=True)
 
-PAGE_SIZE = 100
+DEFAULT_PAGE_SIZE = 100
 
 skip_client = SkipAPIClient()
 alerts = skip_client.get_alerts()
@@ -19,66 +23,61 @@ columns = [
     {'id': 'topic', 'name': 'Topic'},
     {'id': 'alert_timestamp', 'name': 'Alert Timestamp'},
     {'id': 'right_ascension', 'name': 'Right Ascension'},
-    {'id': 'declination', 'name': 'Declination'}
+    {'id': 'declination', 'name': 'Declination'},
 ]
 
-topic_mapping = {
-    'gcn': 1,
-    'tns': 2
-}
 
-# operators = ['>=', '<=', '<', '>', '!=', '=', 'contains', 'datestartswith']
-valid_operators = ['=', 'contains', '>']
-
-
-def split_filter_query(filter_query):
-    for operator in valid_operators:
-        if operator in filter_query:
-            name, value = filter_query.split(operator, 1)
-            name = name[name.find('{') + 1: name.rfind('}')]
-            value = value.strip()
-            v0 = value[0]
-            if v0 == value[-1] and v0 in ("'", '"', '`'):
-                value = value[1: -1].replace('\\' + v0, v0)
-            else:
-                try:
-                    value = float(value)
-                except ValueError:
-                    value = value
-
-            # word operators need spaces after them in the filter string,
-            # but we don't want these later
-            return name, operator.strip(), value
-
-    return [None] * 3
-
-
-app.layout = html.Div([dash_table.DataTable(id='alerts_table',
-                                            columns=columns,
-                                            data=alerts,
-                                            page_current=0,
-                                            page_size=PAGE_SIZE,
-                                            page_action='custom',
-                                            filter_action='custom',
-                                            filter_query='',
-                                            style_table={'height': '800px', 'overflowY': 'auto'})],
-                      style={'height': 1000})
+app.layout = dbc.Container([
+    Div(
+        dbc.Row([
+            dbc.Col(dcc.Dropdown(
+                id='topic-filter',
+                options=[
+                    {'label': 'gcn', 'value': '1'},
+                    {'label': 'tns', 'value': '2'}
+                ],
+            )),
+            dbc.Col(dcc.DatePickerRange(
+                id='time-filter',
+                min_date_allowed = datetime(2020, 1, 1),
+                initial_visible_month = datetime.now()
+            )),
+            dbc.Col(dcc.Input(
+                id='cone-search',
+                type='text',
+                placeholder='RA, Dec, Radius',
+                debounce=True
+            )),
+        ])
+    ),
+    Div([
+        DataTable(id='alerts-table', columns=columns, data=alerts, page_current=0, page_size=DEFAULT_PAGE_SIZE,
+                  page_action='custom', style_table={'height': '800px', 'overflowY': 'auto'}),
+        dcc.Input(id='alerts-table-page-size', type='number', min=10, max=1000, value=20)
+        ], style={'height': 1000}
+    )
+])
 
 
-# TODO: Update backend with limit param, add page_size parameter to dash_table
+# TODO: don't display pagination if total_count < page_size
+# TODO: Add keyword search, add backend support - talk to Adam about implementation details
 @app.callback(
-    Output('alerts_table', 'data'),
-    [Input('alerts_table', 'page_current'),
-     Input('alerts_table', 'page_size'),
-     Input('alerts_table', 'filter_query')])
-def filter_table(page_current, page_size, filter_str):
+    Output('alerts-table', 'data'),
+    [Input('alerts-table', 'page_current'),
+     Input('alerts-table-page-size', 'value'),
+     Input('alerts-table', 'filter_query'),
+     Input('topic-filter', 'value'),
+     Input('time-filter', 'start_date'),
+     Input('time-filter', 'end_date'),
+     Input('cone-search', 'value')])
+def filter_table(page_current, page_size, filter_str, topic_filter, start_date, end_date, cone_search):
+    print(page_size)
+    print(cone_search)
     filter_parameters = {}
-    for filter_query in filter_str.split(' && '):
-        column, operator, filter_value = split_filter_query(filter_query)
-        if operator in valid_operators:
-            if column == 'topic':
-                filter_parameters[column] = topic_mapping[filter_value]
-            else:
-                filter_parameters[column] = filter_value
+    filter_parameters['page_size'] = page_size if page_size else DEFAULT_PAGE_SIZE
+    filter_parameters['topic'] = topic_filter if topic_filter else ''
+    filter_parameters['alert_timestamp_after'] = start_date if start_date else ''
+    filter_parameters['alert_timestamp_before'] = end_date if end_date else ''
+    filter_parameters['cone_search'] = cone_search if cone_search else ''
 
-    return skip_client.get_alerts(page=page_current+1, limit=page_size, **filter_parameters)
+    return skip_client.get_alerts(page=page_current+1, **filter_parameters)

@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_plotly_dash.apps.DjangoPlotlyDashConfig',
-    'skip'
+    'skip',
+    'bootstrap4'
 ]
 
 MIDDLEWARE = [

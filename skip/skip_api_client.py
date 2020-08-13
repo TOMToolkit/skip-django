@@ -10,9 +10,6 @@ SKIP_API_KEY = settings.SKIP_API_KEY
 
 class SkipAPIClient():
 
-    def __init__(self, *args, **kwargs):
-        pass
-
     def get_alerts(self, *args, **kwargs):
         query_params = urlencode(kwargs)
         response = requests.get(f'{SKIP_BASE_URL}/alerts/?{query_params}', headers={'Authorization': f'Token {SKIP_API_KEY}'})
