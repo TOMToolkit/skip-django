@@ -13,8 +13,8 @@
 
 This section is under maintenance, as it isn't 100% clear that the instructions couldn't be simplified.
 
-- Add `skip`, `bootstrap4`, and  `django_plotly_dash.apps.DjangoPlotlyDashConfig` to `INSTALLED_APPS` in `settings.py`.
+- Add `skip_dpd`, `bootstrap4`, and  `django_plotly_dash.apps.DjangoPlotlyDashConfig` to `INSTALLED_APPS` in `settings.py`.
 - Add `SKIP_API_KEY` with an appropriate value to `settings.py`.
 - Add `X_FRAME_OPTIONS = 'SAMEORIGIN'` to `settings.py`.
-- Possible: Copy `PLOTLY_COMPONENTS = [<various>]` from `skip_dpd_base/settings.py` to `settings.py`.
-- Add `path('django_plotly_dash/', include('django_plotly_dash.urls'))` and `path('skip/', include('skip_urls', namespace='skip'))` to `urls.py`.
+- Copy `PLOTLY_COMPONENTS = [<various>]` from `skip_dpd_base/settings.py` to `settings.py`.
+- Add `path('django_plotly_dash/', include('django_plotly_dash.urls'))` and `path('skip/', include('skip_dpd.urls', namespace='skip'))` to `urls.py`.
