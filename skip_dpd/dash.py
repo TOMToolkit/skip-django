@@ -1,4 +1,5 @@
 from datetime import datetime
+from importlib import import_module
 
 import dash
 from dash.dependencies import Input, Output
@@ -7,6 +8,7 @@ import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 from dash_html_components import Div
 from dash_table import DataTable
+from django.conf import settings
 from django_plotly_dash import DjangoDash
 # import dash_table
 
@@ -16,7 +18,22 @@ app = DjangoDash('SkipDash', external_stylesheets=[themes.BOOTSTRAP], add_bootst
 
 DEFAULT_PAGE_SIZE = 100
 
-skip_client = SkipAPIClient()
+def get_api_client():
+    try:
+        api_class = settings.SKIP_API_CLIENT
+    except AttributeError:
+        api_class = 'skip_dpd.skip_api_client.SkipAPIClient'
+    
+    module_name, class_name = api_class.rsplit('.', 1)
+    try:
+        client_module = import_module(module_name)
+        clazz = getattr(client_module, class_name)
+        return clazz
+    except (ImportError, AttributeError):
+        raise ImportError(f'Could not import {api_class}. Did you provide the correct path?')
+
+
+skip_client = get_api_client()()
 alerts = skip_client.get_alerts()
 
 columns = [
@@ -71,8 +88,6 @@ app.layout = dbc.Container([
      Input('time-filter', 'end_date'),
      Input('cone-search', 'value')])
 def filter_table(page_current, page_size, filter_str, topic_filter, start_date, end_date, cone_search):
-    print(page_size)
-    print(cone_search)
     filter_parameters = {}
     filter_parameters['page_size'] = page_size if page_size else DEFAULT_PAGE_SIZE
     filter_parameters['topic'] = topic_filter if topic_filter else ''
