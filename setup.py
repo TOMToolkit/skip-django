@@ -33,7 +33,8 @@ setup(
         'dash-bootstrap-components==0.10.3',
         'whitenoise==5.2.0',
         'dpd-static-support',
-        'django-bootstrap4'
+        'django-bootstrap4',
+        'requests'
     ],
     extras_require={
     },
