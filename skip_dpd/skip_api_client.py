@@ -4,8 +4,10 @@ from urllib.parse import urlencode
 
 from django.conf import settings
 
-
-SKIP_BASE_URL = 'http://skip.dev.hop.scimma.org/api'
+try:
+    SKIP_BASE_URL = settings.SKIP_BASE_URL
+except AttributeError:    
+    SKIP_BASE_URL = 'http://skip.dev.hop.scimma.org/api'
 SKIP_API_KEY = settings.SKIP_API_KEY
 
 class SkipAPIClient():
