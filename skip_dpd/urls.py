@@ -1,7 +1,7 @@
 from django.urls import path
 
-from skip import dash
-from skip.views import SkipView
+from skip_dpd import dash
+from skip_dpd.views import SkipView
 
 app_name = 'skip'
 

@@ -1,4 +1,4 @@
-"""skip_django URL Configuration
+"""skip_dpd_base URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.0/topics/http/urls/
@@ -18,6 +18,6 @@ from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('skip/', include('skip.urls', namespace='skip')),
+    path('skip/', include('skip_dpd.urls', namespace='skip')),
     path('django_plotly_dash/', include('django_plotly_dash.urls')),
 ]

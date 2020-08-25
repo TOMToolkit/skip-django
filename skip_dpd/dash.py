@@ -10,7 +10,7 @@ from dash_table import DataTable
 from django_plotly_dash import DjangoDash
 # import dash_table
 
-from .skip_api_client import SkipAPIClient
+from skip_dpd.skip_api_client import SkipAPIClient
 
 app = DjangoDash('SkipDash', external_stylesheets=[themes.BOOTSTRAP], add_bootstrap_links=True)
 
