@@ -32,7 +32,8 @@ setup(
         'django_plotly_dash==1.4.2',
         'dash-bootstrap-components==0.10.3',
         'whitenoise==5.1.0',
-        'dpd-static-support'
+        'dpd-static-support',
+        'django-bootstrap4'
     ],
     extras_require={
     },
