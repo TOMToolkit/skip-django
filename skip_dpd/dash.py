@@ -16,7 +16,7 @@ from skip_dpd.skip_api_client import SkipAPIClient
 
 app = DjangoDash('SkipDash', external_stylesheets=[themes.BOOTSTRAP], add_bootstrap_links=True)
 
-DEFAULT_PAGE_SIZE = 100
+DEFAULT_PAGE_SIZE = 20
 
 def get_api_client():
     try:
@@ -34,7 +34,7 @@ def get_api_client():
 
 
 skip_client = get_api_client()()
-alerts = skip_client.get_alerts()
+alerts = skip_client.get_alerts(page=1, page_size=DEFAULT_PAGE_SIZE)
 
 columns = [
     {'id': 'topic', 'name': 'Topic'},
