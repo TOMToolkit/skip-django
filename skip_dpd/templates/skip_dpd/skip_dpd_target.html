@@ -1,0 +1,6 @@
+{% load plotly_dash static %}
+
+<div class="{% plotly_class name='SkipTargetDash' %}" style="height: 100%; width: 100%">
+  <div hidden id="target-pk">{{ pk }}</div>
+  {% plotly_app name="SkipTargetDash" ratio=0.5 %}
+</div>
