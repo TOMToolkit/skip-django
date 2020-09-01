@@ -10,7 +10,6 @@ from dash_html_components import Div
 from dash_table import DataTable
 from django.conf import settings
 from django_plotly_dash import DjangoDash
-# import dash_table
 
 from skip_dpd.skip_api_client import SkipAPIClient
 
@@ -35,6 +34,7 @@ def get_api_client():
 
 skip_client = get_api_client()()
 alerts = skip_client.get_alerts(page=1, page_size=DEFAULT_PAGE_SIZE)
+topics = [{'label': topic['name'], 'value': topic['id']} for topic in skip_client.get_topics()]
 
 columns = [
     {'id': 'topic', 'name': 'Topic'},
@@ -49,10 +49,8 @@ app.layout = dbc.Container([
         dbc.Row([
             dbc.Col(dcc.Dropdown(
                 id='topic-filter',
-                options=[
-                    {'label': 'gcn', 'value': '1'},
-                    {'label': 'tns', 'value': '2'}
-                ],
+                options=topics,
+                multi=True
             )),
             dbc.Col(dcc.DatePickerRange(
                 id='time-filter',
