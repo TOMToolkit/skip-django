@@ -30,14 +30,34 @@ def get_api_client():
     except (ImportError, AttributeError):
         raise ImportError(f'Could not import {api_class}. Did you provide the correct path?')
 
+def get_alert_title(alert):
+    try:
+        if alert['topic'] == 'gcn':
+            return alert['message']['What']['Description']
+        elif alert['topic'] == 'lvc-counterpart':
+            return alert['message']['title']
+        elif alert['topic'] == 'tns':
+            return f"{alert['identifier']} - {alert['message']['hostname']}"
+    except:
+        return ''
+    return ''
+
+def get_alert_detail_link(alert):
+    if alert['topic'] == 'tns':
+        return f"[{alert['id']}](http://wis-tns.weizmann.ac.il/object/{alert['message']['name']})"
+    else:
+        return f"[{alert['id']}](/skip/target/{alert['id']})"
+
 skip_client = get_api_client()()
 alerts = skip_client.get_alerts(page=1, page_size=DEFAULT_PAGE_SIZE)
 for alert in alerts:
-    alert['id'] = f"[{alert['id']}](/skip/target/{alert['id']})"
+    alert['title'] = get_alert_title(alert)
+    alert['id'] = get_alert_detail_link(alert)
 topics = [{'label': topic['name'], 'value': topic['id']} for topic in skip_client.get_topics()]
 
 columns = [
     {'id': 'id', 'name': 'Id', 'type': 'text', 'presentation': 'markdown'},
+    {'id': 'title', 'name': 'Title'},
     {'id': 'topic', 'name': 'Topic'},
     {'id': 'alert_timestamp', 'name': 'Alert Timestamp'},
     {'id': 'right_ascension', 'name': 'Right Ascension'},
@@ -90,6 +110,11 @@ app.layout = dbc.Container([
     dhc.Div([
         DataTable(id='alerts-table', columns=columns, data=alerts, page_current=0, page_size=DEFAULT_PAGE_SIZE,
                   page_action='custom',
+                  style_data={
+                      'whiteSpace': 'normal',
+                      'height': 'auto',
+                      'maxWidth': '20%'
+                  },
                   style_data_conditional=[{
                       'if': {'column_id': 'id'},
                       'vertical-align': 'middle',
@@ -129,17 +154,17 @@ app.layout = dbc.Container([
      Input('cone-search', 'value'),
      Input('keyword-search', 'value')])
 def filter_table(page_current, page_size, topic_filter, start_date, end_date, cone_search, keyword_search):
+    # Filter parameters keywords must match skip.AlertFilter properties
     filter_parameters = {}
     filter_parameters['page_size'] = page_size if page_size else DEFAULT_PAGE_SIZE
-    filter_parameters['topic'] = topic_filter if topic_filter else ''
+    filter_parameters['topic'] = topic_filter if topic_filter else []
     filter_parameters['alert_timestamp_after'] = start_date if start_date else ''
     filter_parameters['alert_timestamp_before'] = end_date if end_date else ''
     filter_parameters['cone_search'] = cone_search if cone_search else ''
-    filter_parameters['keyword_search'] = keyword_search if keyword_search else ''
-
-    print(f'filter_parameters= {filter_parameters}')  # TODO: remove
+    filter_parameters['keyword'] = keyword_search if keyword_search else ''
 
     filtered_alerts = skip_client.get_alerts(page=page_current+1, **filter_parameters)
     for filtered_alert in filtered_alerts:
-        alert['id'] = f"[{filtered_alert['id']}](/skip/target/{filtered_alert['id']})"
+        filtered_alert['title'] = get_alert_title(filtered_alert)
+        filtered_alert['id'] = get_alert_detail_link(filtered_alert)
     return filtered_alerts
