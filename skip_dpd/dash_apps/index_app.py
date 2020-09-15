@@ -141,5 +141,5 @@ def filter_table(page_current, page_size, topic_filter, start_date, end_date, co
 
     filtered_alerts = skip_client.get_alerts(page=page_current+1, **filter_parameters)
     for filtered_alert in filtered_alerts:
-        alert['id'] = f"[{filtered_alert['id']}](/skip/target/{filtered_alert['id']})"
+        filtered_alert['id'] = f"[{filtered_alert['id']}](/skip/target/{filtered_alert['id']})"
     return filtered_alerts
