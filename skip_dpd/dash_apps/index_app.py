@@ -70,7 +70,7 @@ app.layout = dbc.Container([
                 debounce=True
             )),
             dbc.Col(dcc.Input(
-                id='keywork-search',
+                id='keyword-search',
                 type='text',
                 placeholder='keywords',
                 debounce=True
@@ -127,7 +127,7 @@ app.layout = dbc.Container([
      Input('time-filter', 'start_date'),
      Input('time-filter', 'end_date'),
      Input('cone-search', 'value'),
-     Input('keyword-search', 'keywords')])
+     Input('keyword-search', 'value')])
 def filter_table(page_current, page_size, topic_filter, start_date, end_date, cone_search, keyword_search):
     filter_parameters = {}
     filter_parameters['page_size'] = page_size if page_size else DEFAULT_PAGE_SIZE
