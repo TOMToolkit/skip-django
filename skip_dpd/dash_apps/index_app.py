@@ -69,6 +69,12 @@ app.layout = dbc.Container([
                 placeholder='Cone Search: RA, Dec, Radius',
                 debounce=True
             )),
+            dbc.Col(dcc.Input(
+                id='keywork-search',
+                type='text',
+                placeholder='keywords',
+                debounce=True
+            )),
         ],
             style={
                 'padding': '10px 0px',
@@ -120,16 +126,20 @@ app.layout = dbc.Container([
      Input('topic-filter', 'value'),
      Input('time-filter', 'start_date'),
      Input('time-filter', 'end_date'),
-     Input('cone-search', 'value')])
-def filter_table(page_current, page_size, topic_filter, start_date, end_date, cone_search):
+     Input('cone-search', 'value'),
+     Input('keyword-search', 'keywords')])
+def filter_table(page_current, page_size, topic_filter, start_date, end_date, cone_search, keyword_search):
     filter_parameters = {}
     filter_parameters['page_size'] = page_size if page_size else DEFAULT_PAGE_SIZE
     filter_parameters['topic'] = topic_filter if topic_filter else ''
     filter_parameters['alert_timestamp_after'] = start_date if start_date else ''
     filter_parameters['alert_timestamp_before'] = end_date if end_date else ''
     filter_parameters['cone_search'] = cone_search if cone_search else ''
+    filter_parameters['keyword_search'] = keyword_search if keyword_search else ''
 
-    alerts = skip_client.get_alerts(page=page_current+1, **filter_parameters)
-    for alert in alerts:
-        alert['id'] = f"[{alert['id']}](/skip/target/{alert['id']})"
-    return alerts
+    print(f'filter_parameters= {filter_parameters}')  # TODO: remove
+
+    filtered_alerts = skip_client.get_alerts(page=page_current+1, **filter_parameters)
+    for filtered_alert in filtered_alerts:
+        alert['id'] = f"[{filtered_alert['id']}](/skip/target/{filtered_alert['id']})"
+    return filtered_alerts
