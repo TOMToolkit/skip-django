@@ -46,7 +46,7 @@ def get_alert_detail_link(alert):
     if alert['topic'] == 'tns':
         return f"[{alert['id']}](http://wis-tns.weizmann.ac.il/object/{alert['message']['name']})"
     else:
-        return f"[{alert['id']}](http://skip.hop.dev.scimma.org/api/alerts/{alert['id']})"
+        return f"[{alert['id']}](http://skip.dev.hop.scimma.org/api/alerts/{alert['id']})"
 
 skip_client = get_api_client()()
 alerts = skip_client.get_alerts(page=1, page_size=DEFAULT_PAGE_SIZE)
