@@ -95,6 +95,12 @@ app.layout = dbc.Container([
                 placeholder='keywords',
                 debounce=True
             )),
+            dbc.Col(dcc.Input(
+                id='event-trig-num-search',
+                type='text',
+                placeholder='LVC Event Trigger Number',
+                debounce=True
+            )),
         ],
             style={
                 'padding': '10px 0px',
@@ -152,8 +158,9 @@ app.layout = dbc.Container([
      Input('time-filter', 'start_date'),
      Input('time-filter', 'end_date'),
      Input('cone-search', 'value'),
-     Input('keyword-search', 'value')])
-def filter_table(page_current, page_size, topic_filter, start_date, end_date, cone_search, keyword_search):
+     Input('keyword-search', 'value'),
+     Input('event-trig-num-search', 'value')])
+def filter_table(page_current, page_size, topic_filter, start_date, end_date, cone_search, keyword_search, etn_search):
     # Filter parameters keywords must match skip.AlertFilter properties
     filter_parameters = {}
     filter_parameters['page_size'] = page_size if page_size else DEFAULT_PAGE_SIZE
@@ -162,6 +169,8 @@ def filter_table(page_current, page_size, topic_filter, start_date, end_date, co
     filter_parameters['alert_timestamp_before'] = end_date if end_date else ''
     filter_parameters['cone_search'] = cone_search if cone_search else ''
     filter_parameters['keyword'] = keyword_search if keyword_search else ''
+    filter_parameters['event_trigger_number'] = etn_search if etn_search else ''
+    print(filter_parameters)
 
     filtered_alerts = skip_client.get_alerts(page=page_current+1, **filter_parameters)
     for filtered_alert in filtered_alerts:
