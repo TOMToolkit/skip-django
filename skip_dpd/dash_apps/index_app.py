@@ -13,8 +13,6 @@ from skip_dpd.skip_client import get_client
 
 app = DjangoDash('SkipDash', external_stylesheets=[dbc.themes.BOOTSTRAP], add_bootstrap_links=True)
 
-DEFAULT_PAGE_SIZE = 20
-
 
 def get_alert_title(alert):
     try:
@@ -35,7 +33,7 @@ def get_alert_detail_link(alert):
         return f"[{alert['id']}](http://skip.dev.hop.scimma.org/api/alerts/{alert['id']})"
 
 skip_client = get_client()()
-alerts = skip_client.get_alerts(page=1, page_size=DEFAULT_PAGE_SIZE)
+alerts = skip_client.get_alerts(page=1, page_size=settings.DEFAULT_PAGE_SIZE)
 for alert in alerts:
     alert['title'] = get_alert_title(alert)
     alert['id'] = get_alert_detail_link(alert)
@@ -100,7 +98,7 @@ app.layout = dbc.Container([
         }
     ),
     dhc.Div([
-        DataTable(id='alerts-table', columns=columns, data=alerts, page_current=0, page_size=DEFAULT_PAGE_SIZE,
+        DataTable(id='alerts-table', columns=columns, data=alerts, page_current=0, page_size=settings.DEFAULT_PAGE_SIZE,
                   page_action='custom',
                   style_data={
                       'whiteSpace': 'normal',
@@ -124,7 +122,7 @@ app.layout = dbc.Container([
                 #   style_table={'height': '800px'},
                   markdown_options={'link_target': '_parent',},
                   ),
-        dcc.Input(id='alerts-table-page-size', type='number', min=10, max=1000, value=DEFAULT_PAGE_SIZE)
+        dcc.Input(id='alerts-table-page-size', type='number', min=10, max=1000, value=settings.DEFAULT_PAGE_SIZE)
         ]
     )
 ])
@@ -149,7 +147,7 @@ app.layout = dbc.Container([
 def filter_table(page_current, page_size, topic_filter, start_date, end_date, cone_search, keyword_search, etn_search):
     # Filter parameters keywords must match skip.AlertFilter properties
     filter_parameters = {}
-    filter_parameters['page_size'] = page_size if page_size else DEFAULT_PAGE_SIZE
+    filter_parameters['page_size'] = page_size if page_size else settings.DEFAULT_PAGE_SIZE
     filter_parameters['topic'] = topic_filter if topic_filter else []
     filter_parameters['alert_timestamp_after'] = start_date if start_date else ''
     filter_parameters['alert_timestamp_before'] = end_date if end_date else ''

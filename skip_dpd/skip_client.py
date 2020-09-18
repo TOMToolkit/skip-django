@@ -42,6 +42,7 @@ class SkipClient():
         return response.json()['results']
 
     def get_topics(self, *args, **kwargs):
-        response = requests.get(f'{SKIP_BASE_URL}/topics/', headers={'Authorization': f'Token {SKIP_API_KEY}'})
+        query_params = urlencode(kwargs)
+        response = requests.get(f'{SKIP_BASE_URL}/topics/?{query_params}', headers={'Authorization': f'Token {SKIP_API_KEY}'})
         response.raise_for_status()
         return response.json()['results']

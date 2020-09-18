@@ -7,3 +7,8 @@ class SkipView(TemplateView):
 
 class SkipTargetView(TemplateView):
     template_name = 'skip_dpd/skip_dpd_target.html'
+
+
+class SkipSwiftXRTView(TemplateView):
+    template_name = 'skip_dpd/skip_dpd_swiftxrt.html'
+
