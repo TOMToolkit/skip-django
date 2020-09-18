@@ -159,6 +159,7 @@ PLOTLY_COMPONENTS = [
 # Skip configuration
 
 SKIP_API_KEY = os.getenv('SKIP_API_KEY', '')
+DEFAULT_PAGE_SIZE = 20
 
 try:
     from local_settings import *

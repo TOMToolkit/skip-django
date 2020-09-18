@@ -1,3 +1,5 @@
+import re
+
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
@@ -11,11 +13,17 @@ from skip_dpd.skip_client import get_client
 
 app = DjangoDash('SkipSwiftXRTDash', external_stylesheets=[dbc.themes.BOOTSTRAP], add_bootstrap_links=True)
 
+comment_warnings_prefix = 'ranks\.php for details.'
+counterpart_identifier_regex = re.compile(r'\d?\w+\s\w\d+\.\d(\+|-)\d+')
+comment_warnings_regex = re.compile(r'({prefix}).*$'.format(prefix=comment_warnings_prefix))
+
+
 def generate_table(alerts):
     table_header = [
         dhc.Thead(
             dhc.Tr([
-                # dhc.A(href=)
+                dhc.Th(''),
+                dhc.Th('Counterpart Identifier'),
                 dhc.Th('Right Ascension'),
                 dhc.Th('Declination'),
                 dhc.Th('LIGO Event TrigNum'),
@@ -27,13 +35,20 @@ def generate_table(alerts):
     ]
     table_rows = []
     for alert in alerts:
+        alert_id = alert['id']
+        ci_match = counterpart_identifier_regex.search(alert['message']['comments'])
+        counterpart_identifier = ci_match[0] if ci_match else ''
+        cw_match = comment_warnings_regex.search(alert['message']['comments'])
+        comment_warnings = cw_match[0][len(comment_warnings_prefix):] if cw_match else ''
         table_rows.append(dhc.Tr([
+            dhc.A(alert_id, href=f'/api/alerts/{alert_id}'),
+            dhc.Td(counterpart_identifier),
             dhc.Td(alert['right_ascension']),
             dhc.Td(alert['declination']),
             dhc.Td(alert['message'].get('event_trig_num', '')),
             dhc.Td(alert['message'].get('telescope', '')),
             dhc.Td(alert['message'].get('rank', '')),
-            dhc.Td(alert['message']['comments']),
+            dhc.Td(comment_warnings),
         ]))
     return dbc.Table(table_header + table_rows, bordered=True)
 
@@ -60,7 +75,7 @@ app.layout = dhc.Div([
 )
 def update_table(event_trig_num):
     event_trigger_number = event_trig_num if event_trig_num else ''
-    alerts = skip_client.get_alerts(page=1, page_size=200,
+    alerts = skip_client.get_alerts(page=1, page_size=settings.DEFAULT_PAGE_SIZE,
                                     topic=[lvc_topic['id']], event_trigger_number=event_trigger_number)
 
     return generate_table(alerts)
