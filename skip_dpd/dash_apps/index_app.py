@@ -1,5 +1,4 @@
 from datetime import datetime
-from importlib import import_module
 
 import dash
 from dash.dependencies import Input, Output
@@ -10,25 +9,12 @@ from dash_table import DataTable
 from django.conf import settings
 from django_plotly_dash import DjangoDash
 
-from skip_dpd.skip_api_client import SkipAPIClient
+from skip_dpd.skip_client import get_client
 
 app = DjangoDash('SkipDash', external_stylesheets=[dbc.themes.BOOTSTRAP], add_bootstrap_links=True)
 
 DEFAULT_PAGE_SIZE = 20
 
-def get_api_client():
-    try:
-        api_class = settings.SKIP_API_CLIENT
-    except AttributeError:
-        api_class = 'skip_dpd.skip_api_client.SkipAPIClient'
-    
-    module_name, class_name = api_class.rsplit('.', 1)
-    try:
-        client_module = import_module(module_name)
-        clazz = getattr(client_module, class_name)
-        return clazz
-    except (ImportError, AttributeError):
-        raise ImportError(f'Could not import {api_class}. Did you provide the correct path?')
 
 def get_alert_title(alert):
     try:
@@ -48,7 +34,7 @@ def get_alert_detail_link(alert):
     else:
         return f"[{alert['id']}](http://skip.dev.hop.scimma.org/api/alerts/{alert['id']})"
 
-skip_client = get_api_client()()
+skip_client = get_client()()
 alerts = skip_client.get_alerts(page=1, page_size=DEFAULT_PAGE_SIZE)
 for alert in alerts:
     alert['title'] = get_alert_title(alert)
