@@ -59,8 +59,8 @@ def generate_table(alerts, page_size, page_num):
         table_rows.append(dhc.Tr([
             dhc.Td(dhc.A(alert_id, href=f'/api/alerts/{alert_id}')),
             dhc.Td(counterpart_identifier),
-            dhc.Td(alert['right_ascension']),
-            dhc.Td(alert['declination']),
+            dhc.Td(alert['right_ascension_sexagesimal']),
+            dhc.Td(alert['declination_sexagesimal']),
             dhc.Td(alert['message'].get('event_trig_num', '')),
             dhc.Td(alert['message'].get('telescope', '')),
             dhc.Td(alert['message'].get('rank', '')),

@@ -44,8 +44,8 @@ columns = [
     {'id': 'title', 'name': 'Title'},
     {'id': 'topic', 'name': 'Topic'},
     {'id': 'alert_timestamp', 'name': 'Alert Timestamp'},
-    {'id': 'right_ascension', 'name': 'Right Ascension'},
-    {'id': 'declination', 'name': 'Declination'},
+    {'id': 'right_ascension_sexagesimal', 'name': 'Right Ascension'},
+    {'id': 'declination_sexagesimal', 'name': 'Declination'},
 ]
 
 
