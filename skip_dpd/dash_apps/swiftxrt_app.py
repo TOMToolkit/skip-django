@@ -57,7 +57,7 @@ def generate_table(alerts, page_size, page_num):
         cw_match = comment_warnings_regex.search(alert['message']['comments'])
         comment_warnings = cw_match[0][len(comment_warnings_prefix):] if cw_match else ''
         table_rows.append(dhc.Tr([
-            dhc.A(alert_id, href=f'/api/alerts/{alert_id}'),
+            dhc.Td(dhc.A(alert_id, href=f'/api/alerts/{alert_id}')),
             dhc.Td(counterpart_identifier),
             dhc.Td(alert['right_ascension']),
             dhc.Td(alert['declination']),
@@ -67,7 +67,7 @@ def generate_table(alerts, page_size, page_num):
             dhc.Td(comment_warnings),
         ]))
     return dhc.Div([
-        dcc.Store(id='memory'),
+        dcc.Store(id='session'),
         dbc.Table(table_header + table_rows, bordered=True),
         generate_pagination(page_size, page_num)
     ])
@@ -90,11 +90,11 @@ app.layout = dhc.Div([
 
 @app.callback(
     [Output('table-container', 'children'),
-    Output('memory', 'data')],
+    Output('session', 'data')],
     [Input('event-trigger-number', 'value'),
     Input('last-page', 'n_clicks_timestamp'),
     Input('next-page', 'n_clicks_timestamp')],
-    [State('memory', 'data')]
+    [State('session', 'data')]
 )
 def update_table(event_trig_num, last_page_timestamp, next_page_timestamp, data):
     if not data:
