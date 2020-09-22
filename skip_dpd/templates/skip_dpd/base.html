@@ -1,0 +1,38 @@
+{% load static bootstrap4 %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    {% bootstrap_css %}
+    {% block additional_css %}
+    {% endblock %}
+
+    <title>Skip | {% block title %}{% endblock %}</title>
+  </head>
+  <body>
+      {% comment %}
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+        <a class="navbar-brand" href="/"><img src="" class="img-fluid">Skip</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+  
+        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+            <ul class="navbar-nav ml-auto">
+            </ul>
+        </div>
+    </nav>
+    {% endcomment %}
+    <main role="main" class="container">
+      {% bootstrap_messages %}
+      <div class="content" style="padding-top: 3rem">
+        {% block content %}
+        {% endblock %}
+      </div>
+    </main>
+  </body>
+</html>
