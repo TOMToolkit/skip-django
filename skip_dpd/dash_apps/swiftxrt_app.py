@@ -57,7 +57,7 @@ def generate_table(alerts, page_size, page_num):
         cw_match = comment_warnings_regex.search(alert['message']['comments'])
         comment_warnings = cw_match[0][len(comment_warnings_prefix):] if cw_match else ''
         table_rows.append(dhc.Tr([
-            dhc.A(alert_id, href=f'/api/alerts/{alert_id}'),
+            dhc.Td(dhc.A(alert_id, href=f'/api/alerts/{alert_id}')),
             dhc.Td(counterpart_identifier),
             dhc.Td(alert['right_ascension']),
             dhc.Td(alert['declination']),
