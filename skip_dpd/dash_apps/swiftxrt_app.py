@@ -1,6 +1,7 @@
 import re
 
-from dash.dependencies import Input, Output
+import dash
+from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as dhc
@@ -18,7 +19,22 @@ counterpart_identifier_regex = re.compile(r'\d?\w+\s\w\d+\.\d(\+|-)\d+')
 comment_warnings_regex = re.compile(r'({prefix}).*$'.format(prefix=comment_warnings_prefix))
 
 
-def generate_table(alerts):
+def generate_pagination(page_size, page_num):
+    # TODO: make this return which set of alerts are being displayed
+    return dbc.Row([
+        dbc.Col(f'Showing {(page_num-1)*(page_size) + 1} - {page_num*page_size} alerts', width=8),
+        dbc.Col(width=1),
+        dbc.Col(width=1),
+        dbc.Col(width=1),
+        dbc.Col([dhc.Button('<', id='last-page', n_clicks=0),
+                f' {page_num} ',
+                dhc.Button('>', id='next-page', n_clicks=0)
+            ], 
+            width=1
+        ),
+    ], id='pagination')
+
+def generate_table(alerts, page_size, page_num):
     table_header = [
         dhc.Thead(
             dhc.Tr([
@@ -50,12 +66,15 @@ def generate_table(alerts):
             dhc.Td(alert['message'].get('rank', '')),
             dhc.Td(comment_warnings),
         ]))
-    return dbc.Table(table_header + table_rows, bordered=True)
+    return dhc.Div([
+        dcc.Store(id='memory'),
+        dbc.Table(table_header + table_rows, bordered=True),
+        generate_pagination(page_size, page_num)
+    ])
 
 
 skip_client = get_client()()
 lvc_topic = skip_client.get_topics(name='lvc-counterpart')[0]
-print(lvc_topic)
 alerts = skip_client.get_alerts(page=1, page_size=settings.DEFAULT_PAGE_SIZE, topic=[lvc_topic['id']])
 
 
@@ -65,17 +84,27 @@ app.layout = dhc.Div([
         type='text',
         placeholder='test'
     ),
-    dhc.Div(generate_table(alerts), id='table-container'),
+    dhc.Div(generate_table(alerts, 20, 1), id='table-container'),
 ])
 
 
 @app.callback(
-    Output('table-container', 'children'),
-    [Input('event-trigger-number', 'value')]
+    [Output('table-container', 'children'),
+    Output('memory', 'data')],
+    [Input('event-trigger-number', 'value'),
+    Input('last-page', 'n_clicks_timestamp'),
+    Input('next-page', 'n_clicks_timestamp')],
+    [State('memory', 'data')]
 )
-def update_table(event_trig_num):
+def update_table(event_trig_num, last_page_timestamp, next_page_timestamp, data):
+    if not data:
+        data = {'page_num': 1}
+    if last_page_timestamp and data['page_num'] > 1:
+        data['page_num'] -= 1
+    elif next_page_timestamp and data['page_num'] < 20:  # TODO: 20 should be num_pages
+        data['page_num'] += 1
     event_trigger_number = event_trig_num if event_trig_num else ''
-    alerts = skip_client.get_alerts(page=1, page_size=settings.DEFAULT_PAGE_SIZE,
+    alerts = skip_client.get_alerts(page=data['page_num'], page_size=settings.DEFAULT_PAGE_SIZE,
                                     topic=[lvc_topic['id']], event_trigger_number=event_trigger_number)
 
-    return generate_table(alerts)
+    return generate_table(alerts, 20, data['page_num']), data

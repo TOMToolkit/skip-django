@@ -1,5 +1,7 @@
+{% extends 'skip_dpd/base.html' %}
 {% load plotly_dash static bootstrap4 %}
-
+{% block content %}
 <div class="{% plotly_class name='SkipDash' %}" style="height: 100%; width: 100%">
   {% plotly_app name="SkipDash" ratio=1 %}
 </div>
+{% endblock %}
