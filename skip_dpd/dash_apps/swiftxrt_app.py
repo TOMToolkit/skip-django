@@ -52,19 +52,15 @@ def generate_table(alerts, page_size, page_num):
     table_rows = []
     for alert in alerts:
         alert_id = alert['id']
-        ci_match = counterpart_identifier_regex.search(alert['message']['comments'])
-        counterpart_identifier = ci_match[0] if ci_match else ''
-        cw_match = comment_warnings_regex.search(alert['message']['comments'])
-        comment_warnings = cw_match[0][len(comment_warnings_prefix):] if cw_match else ''
         table_rows.append(dhc.Tr([
             dhc.Td(dhc.A(alert_id, href=f'/api/alerts/{alert_id}')),
-            dhc.Td(counterpart_identifier),
+            dhc.Td(alert['extracted_fields']['counterpart_identifier']),
             dhc.Td(alert['right_ascension_sexagesimal']),
             dhc.Td(alert['declination_sexagesimal']),
             dhc.Td(alert['message'].get('event_trig_num', '')),
             dhc.Td(alert['message'].get('telescope', '')),
             dhc.Td(alert['message'].get('rank', '')),
-            dhc.Td(comment_warnings),
+            dhc.Td(alert['extracted_fields']['comment_warnings']),
         ]))
     return dhc.Div([
         dcc.Store(id='session'),
