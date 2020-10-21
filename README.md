@@ -17,4 +17,5 @@ This section is under maintenance, as it isn't 100% clear that the instructions 
 - Add `SKIP_API_KEY` with an appropriate value to `settings.py`.
 - Add `X_FRAME_OPTIONS = 'SAMEORIGIN'` to `settings.py`.
 - Copy `PLOTLY_COMPONENTS = [<various>]` from `skip_dpd_base/settings.py` to `settings.py`.
-- Add `path('django_plotly_dash/', include('django_plotly_dash.urls'))` and `path('skip/', include('skip_dpd.urls', namespace='skip'))` to `urls.py`.
+- Add `path('django_plotly_dash/', include('django_plotly_dash.urls'))` to your top level `urls.py` (Note: in a TOM built with the TOM Toolkit, this may cause problems as it may need to live specifically in `tom_common/urls.py` but this is untested).
+- Add `path('skip/', include('skip_dpd.urls', namespace='skip'))` to `urls.py` wherever you want it (e.g., `tom_alerts/urls.py`).
