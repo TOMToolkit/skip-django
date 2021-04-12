@@ -18,7 +18,7 @@ def get_alert_title(alert):
     try:
         if alert['topic'] == 'gcn':
             return alert['message']['What']['Description']
-        elif alert['topic'] == 'lvc-counterpart':
+        elif alert['topic'] == 'lvc.lvc-counterpart':
             return alert['message']['title']
         elif alert['topic'] == 'tns':
             return f"{alert['identifier']} - {alert['message']['hostname']}"
