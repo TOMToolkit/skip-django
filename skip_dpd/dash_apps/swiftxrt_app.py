@@ -70,8 +70,11 @@ def generate_table(alerts, page_size, page_num):
 
 
 skip_client = get_client()()
-lvc_topic = skip_client.get_topics(name='lvc.lvc-counterpart')[0]
-alerts = skip_client.get_alerts(page=1, page_size=settings.DEFAULT_PAGE_SIZE, topic=[lvc_topic['id']])
+topics = skip_client.get_topics(name='lvc.lvc-counterpart')
+alerts = {}
+if len(topics) > 0:
+    lvc_topic = topics[0]
+    alerts = skip_client.get_alerts(page=1, page_size=settings.DEFAULT_PAGE_SIZE, topic=[lvc_topic['id']])
 
 
 app.layout = dhc.Div([
